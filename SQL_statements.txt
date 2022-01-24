@@ -1,0 +1,39 @@
+SELECT * FROM sample.excel;
+
+SELECT distinct campaign_name from sample.excel;
+
+select COUNT(*) Count_Campaigns  from (SELECT distinct campaign_name from sample.excel where Campaign_name like "%ITA%" ) f;
+
+SELECT campaign_name, sum(cost) cost_sum, avg(cost/click) avg_CPC ,avg(impression) Imp_avg, count(orders) orders_count, sum(revenue) revenue_sum from sample.excel group by campaign_name;
+
+SELECT * FROM sample.retension;
+
+SELECT a.Transaction_ID,a.Campaign_name,b.Retension_cost from sample.excel a left join sample.retension b on a.Campaign_name = b.Campaign_name;
+
+select c.Campaign_name,sum(c.retension_cost) sum_retension_cost from (SELECT a.Transaction_ID,a.Campaign_name,b.Retension_cost from sample.excel a left join sample.retension b on a.Campaign_name = b.Campaign_name) c group by c.Campaign_name;
+
+select COUNT(*) from (select c.Campaign_name,sum(c.retension_cost) from (SELECT a.Transaction_ID,a.Campaign_name,b.Retension_cost from sample.excel a left join sample.retension b on a.Campaign_name = b.Campaign_name) c group by c.Campaign_name) d;
+
+SELECT * from(select c.Campaign_name,sum(c.retension_cost) from (SELECT a.Transaction_ID,a.Campaign_name,b.Retension_cost from sample.excel a left join sample.retension b on a.Campaign_name = b.Campaign_name) c group by c.Campaign_name) x
+INNER JOIN
+(SELECT campaign_name, sum(cost),avg(click),avg(impression), count(orders), sum(revenue) from sample.excel group by campaign_name) y
+on x.campaign_name= y.campaign_name;
+
+ALTER table sample.excel add date DATE;
+UPDATE sample.excel set date = curdate() where device like "%Laptop%" and account like "%ITA%";
+UPDATE sample.excel set date = curdate()-1 where device like "%obile%" and account like "%ITA%";
+UPDATE sample.excel set date = curdate()-8 where device like "%ablet%" and account like "%ITA%";
+UPDATE sample.excel set date = curdate()-2 where device like "%Laptop%" and account like "%ESP%";
+UPDATE sample.excel set date = curdate()-3 where device like "%obile%" and account like "%ESP%";
+UPDATE sample.excel set date = curdate()-4 where device like "%ablet%" and account like "%ESP%";
+UPDATE sample.excel set date = curdate()-5 where device like "%Laptop%" and account like "%AT%";
+UPDATE sample.excel set date = curdate()-6 where device like "%obile%" and account like "%AT%";
+UPDATE sample.excel set date = curdate()-7 where device like "%ablet%" and account like "%AT%";
+
+
+select Account, lag(orders) over (ORDER BY Account) as Previous_Orders from sample.excel; 
+
+select h.date,h.Total_orders, lag(h.Total_orders) over (ORDER BY date) as Previous_Orders from (select date, sum(orders) Total_Orders from sample.excel group by date)h ; 
+
+
+
