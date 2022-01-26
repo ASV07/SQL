@@ -1,24 +1,36 @@
+#### TWO TABLES sample.excel(data about e-commerece digital marketing data)  AND sample.retension (data about retension cost of each customer)
+
+#STATEMENT TO SELECT ALL COLUMNS FROM TABLE
 SELECT * FROM sample.excel;
 
+#STATEMENT TO SELECT DISTINCT VALUES FROM A SPECIFIC COLUMNS 
 SELECT distinct campaign_name from sample.excel;
 
+#STATEMENT TO FIND COUNT OF ALL DISTINCT CAMPAIGNS WITH "ITA" IN THEM
 select COUNT(*) Count_Campaigns  from (SELECT distinct campaign_name from sample.excel where Campaign_name like "%ITA%" ) f;
 
+#STATEMENT TO FIND AGGREGATE FUNCTIONS BY GROUPING PER CAMPAIGN
 SELECT campaign_name, sum(cost) cost_sum, avg(cost/click) avg_CPC ,avg(impression) Imp_avg, count(orders) orders_count, sum(revenue) revenue_sum from sample.excel group by campaign_name;
 
+#STATEMENT TO SELECT ALL COLUMNS FROM TABLE
 SELECT * FROM sample.retension;
 
+#STATEMENT TO  LINK DATA FROM ANOTHER TABLE THROUGH JOIN
 SELECT a.Transaction_ID,a.Campaign_name,b.Retension_cost from sample.excel a left join sample.retension b on a.Campaign_name = b.Campaign_name;
 
+#STATEMENT TO SHOW USAGE OF SUB QUERY TO PERFORM SPICIFIC ACTION I.E. FINDING AGGREGATE OF AGGREGATE 
 select c.Campaign_name,sum(c.retension_cost) sum_retension_cost from (SELECT a.Transaction_ID,a.Campaign_name,b.Retension_cost from sample.excel a left join sample.retension b on a.Campaign_name = b.Campaign_name) c group by c.Campaign_name;
 
+#STATEMENT TO SHOW USE CASE OF JOIN AND SUB QUERY - USE CASE 1
 select COUNT(*) from (select c.Campaign_name,sum(c.retension_cost) from (SELECT a.Transaction_ID,a.Campaign_name,b.Retension_cost from sample.excel a left join sample.retension b on a.Campaign_name = b.Campaign_name) c group by c.Campaign_name) d;
 
+#STATEMENT TO SHOW USE CASE OF JOIN AND SUB QUERY - USE CASE 2 
 SELECT * from(select c.Campaign_name,sum(c.retension_cost) from (SELECT a.Transaction_ID,a.Campaign_name,b.Retension_cost from sample.excel a left join sample.retension b on a.Campaign_name = b.Campaign_name) c group by c.Campaign_name) x
 INNER JOIN
 (SELECT campaign_name, sum(cost),avg(click),avg(impression), count(orders), sum(revenue) from sample.excel group by campaign_name) y
 on x.campaign_name= y.campaign_name;
 
+#STATEMENT ALTER TABLE TO ADD COULUMN DATE AND SET DIFFERENT DATE VALUES ACCORDING TO DEVICE AND ACCOUNT TYPE
 ALTER table sample.excel add date DATE;
 UPDATE sample.excel set date = curdate() where device like "%Laptop%" and account like "%ITA%";
 UPDATE sample.excel set date = curdate()-1 where device like "%obile%" and account like "%ITA%";
@@ -30,6 +42,7 @@ UPDATE sample.excel set date = curdate()-5 where device like "%Laptop%" and acco
 UPDATE sample.excel set date = curdate()-6 where device like "%obile%" and account like "%AT%";
 UPDATE sample.excel set date = curdate()-7 where device like "%ablet%" and account like "%AT%";
 
+#STATEMENT TO SHOW USE CASE OF LAG/LEAD TO SHOW PREVIOUS ORDERING PATTERNS, OR NEXT ORDERS ETC FOR WOW ANALYSIS (WEEK ON WEEK).
 
 select Account, lag(orders) over (ORDER BY Account) as Previous_Orders from sample.excel; 
 
